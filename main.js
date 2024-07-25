@@ -3408,7 +3408,7 @@ module.exports = federation;
 "537": (function (__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
 __webpack_require__.el("537@0:24").then(__webpack_require__.bind(__webpack_require__, /*! ./bootstrap.js */"447"));
 }),
-"211": (function (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+"319": (function (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */var _home_runner_work_webdeck_stocks_webdeck_stocks_node_modules_rspack_core_node_modules_module_federation_webpack_bundler_runtime_dist_index_cjs_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! /home/runner/work/webdeck-stocks/webdeck-stocks/node_modules/@rspack/core/node_modules/@module-federation/webpack-bundler-runtime/dist/index.cjs.js */"426");
@@ -3416,7 +3416,7 @@ __webpack_require__.r(__webpack_exports__);
 
 const __module_federation_runtime_plugins__ = [];
 const __module_federation_remote_infos__ = {};
-const __module_federation_container_name__ = "webdeck_plugin_template";
+const __module_federation_container_name__ = "webdeck_stocks";
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
 if (__webpack_require__.initializeSharingData || __webpack_require__.initializeExposesData) {
     const override = (obj, key, value)=>{
@@ -3602,7 +3602,7 @@ __webpack_require__.e = function (chunkId) {
 }();
 // webpack/runtime/load_chunk_with_block
 !function() {
-var map = {"358@./Plugin": ["132"], "537@0:24": ["132", "425"], "697@": ["512"], "698@": ["987"], "821@": ["987", "132"], "957@": ["512"]};
+var map = {"358@./Plugin": ["132", "990"], "537@0:24": ["132", "990", "425"], "697@": ["512"], "698@": ["987"], "821@": ["987", "132"], "957@": ["512"]};
 
 __webpack_require__.el = function(module) {
   var chunkIds = map[module];
@@ -3659,7 +3659,7 @@ __webpack_require__.n = function (module) {
 !function() {
 
 __webpack_require__.S = {};
-__webpack_require__.initializeSharingData = { scopeToSharingDataMapping: { "default": [{ name: "react-dom", version: "18.3.1", factory: function() { return __webpack_require__.el("821@").then(function() { return function() { return __webpack_require__(/*! /home/runner/work/webdeck-stocks/webdeck-stocks/node_modules/react-dom/index.js */"935"); }; }); }, eager: 0 }, { name: "react", version: "18.3.1", factory: function() { return __webpack_require__.el("957@").then(function() { return function() { return __webpack_require__(/*! /home/runner/work/webdeck-stocks/webdeck-stocks/node_modules/react/index.js */"294"); }; }); }, eager: 0 }] }, uniqueName: "webdeck-plugin-template" };
+__webpack_require__.initializeSharingData = { scopeToSharingDataMapping: { "default": [{ name: "react-dom", version: "18.3.1", factory: function() { return __webpack_require__.el("821@").then(function() { return function() { return __webpack_require__(/*! /home/runner/work/webdeck-stocks/webdeck-stocks/node_modules/react-dom/index.js */"935"); }; }); }, eager: 0 }, { name: "react", version: "18.3.1", factory: function() { return __webpack_require__.el("957@").then(function() { return function() { return __webpack_require__(/*! /home/runner/work/webdeck-stocks/webdeck-stocks/node_modules/react/index.js */"294"); }; }); }, eager: 0 }] }, uniqueName: "webdeck-stocks" };
 __webpack_require__.I = function() { throw new Error("should have __webpack_require__.I") }
 
 }();
@@ -3689,7 +3689,7 @@ __webpack_require__.I = function() { throw new Error("should have __webpack_requ
 !function() {
 var inProgress = {};
 
-var dataWebpackPrefix = "webdeck-plugin-template:";
+var dataWebpackPrefix = "webdeck-stocks:";
 // loadScript function to load a script via script tag
 __webpack_require__.l = function (url, done, key, chunkId) {
 	if (inProgress[url]) {
@@ -3762,7 +3762,7 @@ __webpack_require__.g = (function () {
 // webpack/runtime/consumes_loading
 !function() {
 
-__webpack_require__.consumesLoadingData = { chunkMapping: {"132":["697"],"512":[],"425":["698"],"987":[]}, moduleIdToConsumeDataMapping: { "698": { shareScope: "default", shareKey: "react-dom", import: "react-dom", requiredVersion: "^18.2.0", strictVersion: false, singleton: true, eager: false, fallback: function() { return __webpack_require__.el("698@").then(function() { return function() { return __webpack_require__(/*! react-dom */"935"); }; }); } }, "697": { shareScope: "default", shareKey: "react", import: "react", requiredVersion: "^18.2.0", strictVersion: false, singleton: true, eager: false, fallback: function() { return __webpack_require__.el("697@").then(function() { return function() { return __webpack_require__(/*! react */"294"); }; }); } } }, initialConsumes: [] };
+__webpack_require__.consumesLoadingData = { chunkMapping: {"987":[],"132":["697"],"512":[],"425":["698"],"990":[]}, moduleIdToConsumeDataMapping: { "698": { shareScope: "default", shareKey: "react-dom", import: "react-dom", requiredVersion: "^18.2.0", strictVersion: false, singleton: true, eager: false, fallback: function() { return __webpack_require__.el("698@").then(function() { return function() { return __webpack_require__(/*! react-dom */"935"); }; }); } }, "697": { shareScope: "default", shareKey: "react", import: "react", requiredVersion: "^18.2.0", strictVersion: false, singleton: true, eager: false, fallback: function() { return __webpack_require__.el("697@").then(function() { return function() { return __webpack_require__(/*! react */"294"); }; }); } } }, initialConsumes: [] };
 __webpack_require__.f.consumes = function() { throw new Error("should have __webpack_require__.f.consumes") }
 }();
 // webpack/runtime/jsonp_chunk_loading
@@ -3858,7 +3858,7 @@ var webpackJsonpCallback = function (parentChunkLoadingFunction, data) {
 	
 };
 
-var chunkLoadingGlobal = self["webpackChunkwebdeck_plugin_template"] = self["webpackChunkwebdeck_plugin_template"] || [];
+var chunkLoadingGlobal = self["webpackChunkwebdeck_stocks"] = self["webpackChunkwebdeck_stocks"] || [];
 chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
 chunkLoadingGlobal.push = webpackJsonpCallback.bind(
 	null,
@@ -3890,7 +3890,7 @@ chunkLoadingGlobal.push = webpackJsonpCallback.bind(
     __webpack_require__.p = scriptUrl
     
 }();
-__webpack_require__("211");
+__webpack_require__("319");
 var __webpack_exports__ = __webpack_require__("537");
 })()
 
