@@ -15,7 +15,7 @@ const parseData = (data) => {
     parsedData.data = data[keys.data];
     parsedData.arr = Object.values(parsedData.data)
       .map((value) => {
-        const price = value[keys.value];
+        const price = parseInt(value[keys.value]);
         return price;
       })
       .reverse();
@@ -50,11 +50,9 @@ export const getData = ({ type, fn, symbol, market }) => {
   });
 };
 
-export const tickerUI = ({ canvas, ctx }, data) => {
-  console.log({ data });
-
+export const tickerUI = ({ canvas, ctx }, data, num) => {
   // draw grapgh
-  drawGraph(ctx, data.arr);
+  drawGraph(ctx, data.arr, num);
 
   // draw title
   drawCenterText(
@@ -67,7 +65,7 @@ export const tickerUI = ({ canvas, ctx }, data) => {
   drawTopText(ctx, canvas, data.name);
 };
 
-const drawGraph = (ctx, dataArrInput) => {
+const drawGraph = (ctx, dataArrInput, num) => {
   var GRAPH_TOP = 50;
   var GRAPH_BOTTOM = 52;
   var GRAPH_LEFT = 5;
@@ -89,7 +87,7 @@ const drawGraph = (ctx, dataArrInput) => {
   ctx.beginPath();
   // make your graph look less jagged
   ctx.lineJoin = "round";
-  ctx.strokeStyle = "green";
+  ctx.strokeStyle = num > 0 ? "green" : "red";
   // add first point in the graph
   ctx.moveTo(
     GRAPH_LEFT,
@@ -129,4 +127,24 @@ const drawTopText = (ctx, canvas, title) => {
     textWidth = ctx.measureText(textString).width;
 
   ctx.fillText(textString, canvas.width / 2 - textWidth / 2, 15, canvas.width);
+};
+
+export const trend_value = function (nums) {
+  var summed_nums = nums.reduce((a, b) => parseFloat(a) + parseFloat(b)); //sum(nums)
+  var multiplied_data = 0;
+  var summed_index = 0;
+  var squared_index = 0;
+
+  nums.forEach((num, index) => {
+    //for index, num in enumerate(nums):
+    index += 1;
+    multiplied_data += index * parseFloat(num);
+    summed_index += index;
+    squared_index += index ** 2;
+  });
+
+  var numerator = nums.length * multiplied_data - summed_nums * summed_index;
+  var denominator = nums.length * squared_index - summed_index ** 2;
+  if (denominator != 0) return numerator / denominator;
+  else return 0;
 };
