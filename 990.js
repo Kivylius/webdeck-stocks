@@ -227,11 +227,11 @@ function _ts_generator(thisArg, body) {
             drawKey = param.drawKey, getConfig = param.getConfig;
             fetchDataAndDraw = function() {
                 var _ref = _async_to_generator(function() {
-                    var _getConfig, symbol, market, type, fn, result;
+                    var _getConfig, symbol, market, type, timeframe, fn, result, nextResult, len, trend;
                     return _ts_generator(this, function(_state) {
                         switch(_state.label){
                             case 0:
-                                _getConfig = getConfig(), symbol = _getConfig.symbol, market = _getConfig.market, type = _getConfig.type;
+                                _getConfig = getConfig(), symbol = _getConfig.symbol, market = _getConfig.market, type = _getConfig.type, timeframe = _getConfig.timeframe;
                                 fn = type == "stocks" ? "TIME_SERIES_DAILY" : "DIGITAL_CURRENCY_DAILY";
                                 return [
                                     4,
@@ -244,11 +244,26 @@ function _ts_generator(thisArg, body) {
                                 ];
                             case 1:
                                 result = _state.sent();
-                                console.log({
-                                    result: result
-                                });
+                                len = result.arr.length;
+                                switch(timeframe){
+                                    case "3m":
+                                        nextResult = result;
+                                        nextResult.arr = nextResult.arr.slice(len - 90, len);
+                                        break;
+                                    case "m":
+                                        nextResult = result;
+                                        nextResult.arr = nextResult.arr.slice(len - 30, len);
+                                        break;
+                                    case "w":
+                                        nextResult = result;
+                                        nextResult.arr = nextResult.arr.slice(len - 7, len);
+                                        break;
+                                    default:
+                                        nextResult = result;
+                                }
+                                trend = (0, _utils__WEBPACK_IMPORTED_MODULE_3__.trend_value)(nextResult.arr);
                                 drawKey(function(arg) {
-                                    return (0, _utils__WEBPACK_IMPORTED_MODULE_3__.tickerUI)(arg, result);
+                                    return (0, _utils__WEBPACK_IMPORTED_MODULE_3__.tickerUI)(arg, nextResult, trend);
                                 });
                                 return [
                                     2
@@ -390,6 +405,45 @@ var App = function(param) {
                         ]
                     })
                 ]
+            }),
+            /*#__PURE__*/ (0, react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                className: "webdeck-setting",
+                children: [
+                    /*#__PURE__*/ (0, react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("label", {
+                        htmlFor: "type",
+                        children: "timeframe: "
+                    }),
+                    /*#__PURE__*/ (0, react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("select", {
+                        required: true,
+                        name: "timeframe",
+                        onChange: onChange,
+                        value: config.timeframe || "",
+                        children: [
+                            /*#__PURE__*/ (0, react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("option", {
+                                value: "",
+                                disabled: true,
+                                hidden: true,
+                                children: "year"
+                            }),
+                            /*#__PURE__*/ (0, react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("option", {
+                                value: "y",
+                                children: "year"
+                            }),
+                            /*#__PURE__*/ (0, react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("option", {
+                                value: "3m",
+                                children: "quarter"
+                            }),
+                            /*#__PURE__*/ (0, react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("option", {
+                                value: "m",
+                                children: "month"
+                            }),
+                            /*#__PURE__*/ (0, react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("option", {
+                                value: "w",
+                                children: "week"
+                            })
+                        ]
+                    })
+                ]
             })
         ]
     });
@@ -469,7 +523,8 @@ __webpack_require__.d(__webpack_exports__, {
 __webpack_require__.r(__webpack_exports__);
 __webpack_require__.d(__webpack_exports__, {
   getData: function() { return getData; },
-  tickerUI: function() { return tickerUI; }
+  tickerUI: function() { return tickerUI; },
+  trend_value: function() { return trend_value; }
 });
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
     try {
@@ -607,7 +662,7 @@ var parseData = function(data) {
         parsedData.name = "".concat(meta[keys.a], "-").concat(meta[keys.b]);
         parsedData.data = data[keys.data];
         parsedData.arr = Object.values(parsedData.data).map(function(value) {
-            var price = value[keys.value];
+            var price = parseInt(value[keys.value]);
             return price;
         }).reverse();
         console.log({
@@ -691,19 +746,16 @@ var DB = sessionStorage.getItem("stockdb");
         };
     }());
 };
- var tickerUI = function(param, data) {
+ var tickerUI = function(param, data, num) {
     var canvas = param.canvas, ctx = param.ctx;
-    console.log({
-        data: data
-    });
     // draw grapgh
-    drawGraph(ctx, data.arr);
+    drawGraph(ctx, data.arr, num);
     // draw title
     drawCenterText(ctx, canvas, parseFloat(data.arr[data.arr.length - 1]).toFixed(2));
     // drop top tilte
     drawTopText(ctx, canvas, data.name);
 };
-var drawGraph = function(ctx, dataArrInput) {
+var drawGraph = function(ctx, dataArrInput, num) {
     var GRAPH_TOP = 50;
     var GRAPH_BOTTOM = 52;
     var GRAPH_LEFT = 5;
@@ -733,7 +785,7 @@ var drawGraph = function(ctx, dataArrInput) {
     ctx.beginPath();
     // make your graph look less jagged
     ctx.lineJoin = "round";
-    ctx.strokeStyle = "green";
+    ctx.strokeStyle = num > 0 ? "green" : "red";
     // add first point in the graph
     ctx.moveTo(GRAPH_LEFT, GRAPH_HEIGHT - dataArr[0] / largest * GRAPH_HEIGHT + GRAPH_TOP);
     // loop over data and add points starting from the 2nd index in the array as the first has been added already
@@ -752,6 +804,25 @@ var drawTopText = function(ctx, canvas, title) {
     ctx.font = "10px sans-serif";
     var textString = title, textWidth = ctx.measureText(textString).width;
     ctx.fillText(textString, canvas.width / 2 - textWidth / 2, 15, canvas.width);
+};
+ var trend_value = function trend_value(nums) {
+    var summed_nums = nums.reduce(function(a, b) {
+        return parseFloat(a) + parseFloat(b);
+    }); //sum(nums)
+    var multiplied_data = 0;
+    var summed_index = 0;
+    var squared_index = 0;
+    nums.forEach(function(num, index) {
+        //for index, num in enumerate(nums):
+        index += 1;
+        multiplied_data += index * parseFloat(num);
+        summed_index += index;
+        squared_index += Math.pow(index, 2);
+    });
+    var numerator = nums.length * multiplied_data - summed_nums * summed_index;
+    var denominator = nums.length * squared_index - Math.pow(summed_index, 2);
+    if (denominator != 0) return numerator / denominator;
+    else return 0;
 };
 }),
 
