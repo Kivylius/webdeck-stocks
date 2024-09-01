@@ -65,7 +65,7 @@ export const tickerUI = ({ canvas, ctx }, data, num) => {
   drawTopText(ctx, canvas, data.name);
 };
 
-const drawGraph = (ctx, dataArrInput, num) => {
+const drawGraph = (ctx, dataArrInput, num, scaleType = "normalized") => {
   var GRAPH_TOP = 50;
   var GRAPH_BOTTOM = 52;
   var GRAPH_LEFT = 5;
@@ -76,28 +76,46 @@ const drawGraph = (ctx, dataArrInput, num) => {
   var dataArr = dataArrInput || [6, 8, 10, 12, 11, 7, 5, 8, 11, 5, 2, 3, 4, 6];
   var arrayLen = dataArr.length;
 
-  // calculate largest piece of data
-  var largest = 0;
-  for (var i = 0; i < arrayLen; i++) {
-    if (dataArr[i] > largest) {
-      largest = dataArr[i];
+  // Calculate largest and smallest piece of data
+  const largest = Math.max(...dataArr);
+  const smallest = Math.min(...dataArr);
+
+  // Function to normalize data based on the chosen scale type
+  const normalizeData = (dataArr, scaleType) => {
+    switch (scaleType) {
+      case "logarithmic":
+        return dataArr.map((val) => Math.log(val));
+      case "normalized":
+        return dataArr.map((val) => (val - smallest) / (largest - smallest));
+      default: // "linear"
+        return dataArr;
     }
-  }
+  };
+
+  const normalizedData = normalizeData(dataArr, scaleType);
+
+  // Find largest value after normalization
+  const largestNormalized = Math.max(...normalizedData);
 
   ctx.beginPath();
-  // make your graph look less jagged
   ctx.lineJoin = "round";
   ctx.strokeStyle = num > 0 ? "green" : "red";
-  // add first point in the graph
+
+  // Draw the first point
   ctx.moveTo(
     GRAPH_LEFT,
-    GRAPH_HEIGHT - (dataArr[0] / largest) * GRAPH_HEIGHT + GRAPH_TOP
+    GRAPH_HEIGHT -
+      (normalizedData[0] / largestNormalized) * GRAPH_HEIGHT +
+      GRAPH_TOP
   );
-  // loop over data and add points starting from the 2nd index in the array as the first has been added already
-  for (var i = 1; i < arrayLen; i++) {
+
+  // Loop over normalized data and add points
+  for (let i = 1; i < arrayLen; i++) {
     ctx.lineTo(
       (GRAPH_RIGHT / arrayLen) * i + GRAPH_LEFT,
-      GRAPH_HEIGHT - (dataArr[i] / largest) * GRAPH_HEIGHT + GRAPH_TOP
+      GRAPH_HEIGHT -
+        (normalizedData[i] / largestNormalized) * GRAPH_HEIGHT +
+        GRAPH_TOP
     );
   }
   // actually draw the graph
