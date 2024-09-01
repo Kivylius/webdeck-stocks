@@ -526,6 +526,14 @@ __webpack_require__.d(__webpack_exports__, {
   tickerUI: function() { return tickerUI; },
   trend_value: function() { return trend_value; }
 });
+function _array_like_to_array(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for(var i = 0, arr2 = new Array(len); i < len; i++)arr2[i] = arr[i];
+    return arr2;
+}
+function _array_without_holes(arr) {
+    if (Array.isArray(arr)) return _array_like_to_array(arr);
+}
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
     try {
         var info = gen[key](arg);
@@ -551,6 +559,23 @@ function _async_to_generator(fn) {
             _next(undefined);
         });
     };
+}
+function _iterable_to_array(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+}
+function _non_iterable_spread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _to_consumable_array(arr) {
+    return _array_without_holes(arr) || _iterable_to_array(arr) || _unsupported_iterable_to_array(arr) || _non_iterable_spread();
+}
+function _unsupported_iterable_to_array(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _array_like_to_array(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _array_like_to_array(o, minLen);
 }
 function _ts_generator(thisArg, body) {
     var f, y, t, g, _ = {
@@ -756,6 +781,8 @@ var DB = sessionStorage.getItem("stockdb");
     drawTopText(ctx, canvas, data.name);
 };
 var drawGraph = function(ctx, dataArrInput, num) {
+    var scaleType = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : "normalized";
+    var _Math, _Math1, _Math2;
     var GRAPH_TOP = 50;
     var GRAPH_BOTTOM = 52;
     var GRAPH_LEFT = 5;
@@ -779,17 +806,34 @@ var drawGraph = function(ctx, dataArrInput, num) {
         6
     ];
     var arrayLen = dataArr.length;
-    // calculate largest piece of data
-    var largest = 0;
-    for(var i = 0; i < arrayLen; i++)if (dataArr[i] > largest) largest = dataArr[i];
+    // Calculate largest and smallest piece of data
+    var largest = (_Math = Math).max.apply(_Math, _to_consumable_array(dataArr));
+    var smallest = (_Math1 = Math).min.apply(_Math1, _to_consumable_array(dataArr));
+    // Function to normalize data based on the chosen scale type
+    var normalizeData = function(dataArr, scaleType) {
+        switch(scaleType){
+            case "logarithmic":
+                return dataArr.map(function(val) {
+                    return Math.log(val);
+                });
+            case "normalized":
+                return dataArr.map(function(val) {
+                    return (val - smallest) / (largest - smallest);
+                });
+            default:
+                return dataArr;
+        }
+    };
+    var normalizedData = normalizeData(dataArr, scaleType);
+    // Find largest value after normalization
+    var largestNormalized = (_Math2 = Math).max.apply(_Math2, _to_consumable_array(normalizedData));
     ctx.beginPath();
-    // make your graph look less jagged
     ctx.lineJoin = "round";
     ctx.strokeStyle = num > 0 ? "green" : "red";
-    // add first point in the graph
-    ctx.moveTo(GRAPH_LEFT, GRAPH_HEIGHT - dataArr[0] / largest * GRAPH_HEIGHT + GRAPH_TOP);
-    // loop over data and add points starting from the 2nd index in the array as the first has been added already
-    for(var i = 1; i < arrayLen; i++)ctx.lineTo(GRAPH_RIGHT / arrayLen * i + GRAPH_LEFT, GRAPH_HEIGHT - dataArr[i] / largest * GRAPH_HEIGHT + GRAPH_TOP);
+    // Draw the first point
+    ctx.moveTo(GRAPH_LEFT, GRAPH_HEIGHT - normalizedData[0] / largestNormalized * GRAPH_HEIGHT + GRAPH_TOP);
+    // Loop over normalized data and add points
+    for(var i = 1; i < arrayLen; i++)ctx.lineTo(GRAPH_RIGHT / arrayLen * i + GRAPH_LEFT, GRAPH_HEIGHT - normalizedData[i] / largestNormalized * GRAPH_HEIGHT + GRAPH_TOP);
     // actually draw the graph
     ctx.stroke();
 };
